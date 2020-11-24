@@ -80,6 +80,10 @@ func handleConnection(c net.Conn) {
 
 		fmt.Println(data)
 
+		if data=="close"{
+			break
+		}
+
 		var wr string 
 		fmt.Scanln(&wr)
 		wr = wr+"\n"
@@ -88,12 +92,60 @@ func handleConnection(c net.Conn) {
 		_, e := c.Write(b)
 
 		if e!=nil {
-			log.Fatal("Write error: ",err)
+			log.Fatal("Write error: ",e)
 		}
 
 	}
+
+	c.Close()
 	
 	
+}
+
+func client(name string) {
+
+	addr := "/tmp/"+name+".sock"
+
+	if !fileExists(addr){
+		fmt.Println("No session with the name: "+name)
+		return
+	}
+
+	c, err := net.Dial("unix", addr)
+
+	if err!=nil {
+		log.Fatal("Error while joining session")
+		return
+	}
+
+	fmt.Println("Successfully joined session: "+name)
+
+	for {
+		var wr string 
+		fmt.Scanln(&wr)
+		wr = wr+"\n"
+		b := []byte(wr)
+
+		_, e := c.Write(b)
+		
+		if e!=nil {
+			log.Fatal("Write error: ",e)
+		}
+
+		buf :=make([]byte, 1024)
+		n, err := c.Read(buf)
+		
+		if err!=nil {
+			log.Fatal("Error occurred while recieving data: ", err)
+		}
+
+		data := string(buf[0:n])
+		data = strings.TrimSpace(data)
+
+		fmt.Println(data)
+
+	}
+
 }
 
 
