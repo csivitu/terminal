@@ -17,7 +17,7 @@ func JoinSession(name string){
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
-
+	defer l.Close()
 	for {
 		fd, err := l.Accept()
 		if err != nil {
@@ -25,6 +25,7 @@ func JoinSession(name string){
 		}
 
 		go Server(fd)
+		//go Joiner(addr)
 	}
 
 }

@@ -22,6 +22,7 @@ func CreateSession(name string){
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
+	defer l.Close()
 
 	for {
 		fd, err := l.Accept()
@@ -30,5 +31,6 @@ func CreateSession(name string){
 		}
 
 		go Server(fd)
+		//go Joiner(addr)
 	}
 }
